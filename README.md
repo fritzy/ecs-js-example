@@ -1,6 +1,6 @@
 # @fritzy/ecs Demo
 
-See [fritzy/ecs-js][https://github.com/fritzy/ecs-js].
+See [fritzy/ecs-js](https://github.com/fritzy/ecs-js).
 
 ## Run
 
