@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>@fritzy/ecs roguelike demo</title>
+    <style type='text/css'>
+
+body {background-color: black;}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.item {
+  height: 640px;
+  top: 0px;
+  bottom: 0px;
+  margin: 2px;
+  padding: 2px;
+  color: LimeGreen;
+  font-size: 9pt;
+}
+#log {
+  width: 400px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: LimeGreen;
+  overflow: auto;
+}
+p {
+  font-family: "Lucida Console", Monaco, monospace;
+  margin: 1px;
+}
+.highlight {
+  background-color: #0c300b;
+}
+
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div id='rlcontainer' class='item'></div>
+      <div id='log' class='item'>
+        <p>Loading @fritzy/ecs Test Roguelike</p>
+      </div>
+    </div>
+    <script src="./index.js" type="application/javascript"></script>
+  </body>
+</html>
