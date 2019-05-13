@@ -6,7 +6,7 @@ See [fritzy/ecs-js](https://github.com/fritzy/ecs-js).
 
 ```sh
 git clone git@github.com:fritzy/ecs-js-example.git
-cd ecs-js-demo
+cd ecs-js-example
 npm i
 npm start
 ```

@@ -13,7 +13,7 @@ export const Coordinate = {
 
 export const Floor = {
   properties: {
-    items: '<EntityArray>',
+    items: '<EntitySet>',
     character: '<Entity>'
   }
 };

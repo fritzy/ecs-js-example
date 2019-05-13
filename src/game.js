@@ -80,6 +80,29 @@ export default class Game {
       },
       Inventory: {
       },
+      EquipmentSlot: {
+        leftHand: {
+          slotType: 'hand'
+        },
+        rightHand: {
+          slotType: 'hand'
+        },
+        shoulders: {
+          slotType: 'shoulders'
+        },
+        leftRing: {
+          slotType: 'ring'
+        },
+        rightRing: {
+          slotType: 'ring'
+        },
+        legs: {
+          slotType: 'legs'
+        },
+        feet: {
+          slotType: 'feet'
+        }
+      },
       Renderable: {
         char: '@',
         fg: 'limegreen'
@@ -180,7 +203,7 @@ export default class Game {
           } else if (type === 'book') {
             item.Renderable.char = 'B';
           }
-          this.mapEntity.Map.tiles[`${x}x${y}`].Floor.items.push(item);
+          this.mapEntity.Map.tiles[`${x}x${y}`].Floor.items.add(item);
         }
       }
     }

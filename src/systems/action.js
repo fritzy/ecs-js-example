@@ -1,5 +1,7 @@
 const ECS = require('@fritzy/ecs');
 
+const ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
 export default class ActionSystem extends ECS.System {
 
   constructor(ecs) {
@@ -14,31 +16,119 @@ export default class ActionSystem extends ECS.System {
     for (const entity of entities) {
       const actions = [...entity.Action];
       const action = actions[0];
-      switch (action.action) {
-        case 'up':
-        case 'down':
-        case 'left':
-        case 'right':
-          if (this.global.uiMode === 'move') {
-            this.move(entity, action.action);
-          } else if (this.global.uiMode === 'toggleDoor') {
-            this.toggleDoor(entity, action.action);
-            this.global.uiMode = 'move';
-          }
-          break;
-        case 'toggleDoor':
-          if (this.global.uiMode === 'move') {
-            this.global.uiMode = 'toggleDoor';
-            this.game.log('Open/close door in which direction?');
-            break;
-          }
-        default:
+      if (this.global.uiMode === 'equip') {
+        if (action.action === '') {
           this.global.uiMode = 'move';
-
+        } else {
+          this.equip(entity, action.action);
+        }
+      } else {
+        switch (action.action) {
+          case 'up':
+          case 'down':
+          case 'left':
+          case 'right':
+            if (this.global.uiMode === 'move') {
+              this.move(entity, action.action);
+            } else if (this.global.uiMode === 'toggleDoor') {
+              this.toggleDoor(entity, action.action);
+              this.global.uiMode = 'move';
+            }
+            break;
+          case 'toggleDoor':
+            if (this.global.uiMode === 'move') {
+              this.global.uiMode = 'toggleDoor';
+              this.game.log('Open/close door in which direction?');
+            }
+            break;
+          case 'getItem':
+            this.getItem(entity);
+            break;
+          case 'inventory':
+            this.inventory(entity);
+            break;
+          case 'equip':
+            this.global.uiMode = 'equip';
+            this.equipList(entity);
+            break;
+          default:
+            this.global.uiMode = 'move';
+        }
       }
 
       entity.removeComponent(action);
     }
+  }
+
+  coords(entity) {
+    return `${entity.Coordinate.x}x${entity.Coordinate.y}`;
+  }
+
+  equipList(entity) {
+    this.inventory(entity, 'Equip which item?');
+  }
+
+  equip(entity, key) {
+    console.log('equip', key);
+    const idx = ALPHABET.indexOf(key);
+    if (entity.Inventory.slots.size <= idx) {
+      this.game.log("Invalid item.");
+      this.global.uiMode = 'move';
+      return;
+    }
+    const item = [...entity.Inventory.slots][idx]
+    let name = 'an unknown item';
+    if (item.Description) name = item.Description.name;
+    this.game.log(`Equiping ${name}.`);
+    this.global.uiMode = 'move';
+  }
+
+  inventory(entity, msg) {
+    msg = msg || 'Inventory:';
+    if (!entity.Inventory) {
+      this.game.log("You don't have an inventory.");
+          this.global.uiMode = 'move';
+      return;
+    }
+    const output = [msg];
+    let idx = 0;
+    for (const item of entity.Inventory.slots) {
+      if (item.Description) {
+        output.push(`${ALPHABET[idx]}) ${item.Description.name}`);
+      } else {
+        output.push(`${ALPHABET[idx]}) an unknown item`);
+      }
+      idx++;
+    }
+    if (output.length === 1) {
+      output.push('  empty');
+      this.global.uiMode = 'move';
+    }
+    this.game.log(output.join('\n'));
+  }
+
+  getItem(entity) {
+    let name = 'You'; if (entity.Description) {
+      let name = entity.Description.name;
+      name = name.substr(0, 1).toUpperCase() + name.substr(1);
+    }
+    if (!entity.Inventory || entity.Inventory.max <= entity.Inventory.slots.size) {
+      this.game.log(`${name} can't pick anything up because they don't have anywhere to put it!`);
+      return;
+    }
+    const coords = this.coords(entity);
+    const tile = this.map.Map.tiles[coords];
+    if (!tile.Floor) return;
+    if (tile.Floor.items.size === 0) {
+      this.game.log(`${name} grope the floor.`);
+      return;
+    }
+    const item = [...tile.Floor.items][0]
+    tile.Floor.items.delete(item);
+    entity.Inventory.slots.add(item);
+    let target = 'a thing';
+    if (item.Description) target = item.Description.name;
+    this.game.log(`${name} pick up ${target}.`);
   }
 
   getDirectionCoord(entity, direction) {

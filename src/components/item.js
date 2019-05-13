@@ -18,9 +18,11 @@ export const EffectsFrom = {
 
 export const Equipable = {
   properties: {
-    slot: 'legs'
+    type: 'legs'
   }
 }
+
+export const Unidentified = {};
 
 export const Weapon = {
   properties: {

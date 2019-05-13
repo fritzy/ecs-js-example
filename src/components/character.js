@@ -23,13 +23,14 @@ export const Player = {
 export const Inventory = {
   properties: {
     max: 20,
-    slots: '<EntityArray>'
+    slots: '<EntitySet>'
   }
 }
 
 export const EquipmentSlot = {
   properties: {
     name: 'shoulders',
+    slotType: 'shoulders',
     slot: '<Entity>'
   },
   multiset: true,
