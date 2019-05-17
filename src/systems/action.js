@@ -65,7 +65,7 @@ export default class ActionSystem extends ECS.System {
   }
 
   equipList(entity) {
-    this.inventory(entity, 'Equip which item?');
+    this.inventory(entity, true, 'Equip which item?');
   }
 
   equip(entity, key) {
@@ -79,11 +79,29 @@ export default class ActionSystem extends ECS.System {
     const item = [...entity.Inventory.slots][idx]
     let name = 'an unknown item';
     if (item.Description) name = item.Description.name;
-    this.game.log(`Equiping ${name}.`);
+    if (!item.Equipable) {
+      this.game.log(`Cannot equip ${name}.`);
+      this.global.uiMode = 'move';
+      return;
+    }
+    let success = false;
+    for (const slotName of Object.keys(entity.EquipmentSlot)) {
+      const eSlot = entity.EquipmentSlot[slotName];
+      console.log(slotName);
+      if (!eSlot.slot && eSlot.slotType === item.Equipable.slotType) {
+        entity.Inventory.slots.delete(item);
+        eSlot.slot = item;
+        success = true;
+        this.game.log(`Equiping ${name} to ${slotName}.`);
+        break;
+      }
+    }
+    if (!success)
+      this.game.log(`No slots of type ${item.Equipable.slotType} were available.`);
     this.global.uiMode = 'move';
   }
 
-  inventory(entity, msg) {
+  inventory(entity, equipment, msg) {
     msg = msg || 'Inventory:';
     if (!entity.Inventory) {
       this.game.log("You don't have an inventory.");
@@ -93,10 +111,12 @@ export default class ActionSystem extends ECS.System {
     const output = [msg];
     let idx = 0;
     for (const item of entity.Inventory.slots) {
-      if (item.Description) {
-        output.push(`${ALPHABET[idx]}) ${item.Description.name}`);
-      } else {
-        output.push(`${ALPHABET[idx]}) an unknown item`);
+      if (!equipment || (equipment && item.Equipable)) {
+        if (item.Description) {
+          output.push(`${ALPHABET[idx]}) ${item.Description.name}`);
+        } else {
+          output.push(`${ALPHABET[idx]}) an unknown item`);
+        }
       }
       idx++;
     }

@@ -1,6 +1,6 @@
 const ECS = require('@fritzy/ecs');
 const ROT = require('rot-js');
-const StayDown = require('staydown');
+import StayDown from 'staydown'
 import * as ComponentExports from './components';
 import InputSystem from './systems/input';
 import RenderSystem from './systems/render';
@@ -20,7 +20,7 @@ const options = {
   height: 40
 };
 
-const TICKLENGTH = 1000 / 8;
+const TICKLENGTH = 1000 / 60;
 
 export default class Game {
 
@@ -198,8 +198,14 @@ export default class Game {
           });
           if (type === 'ring') {
             item.Renderable.char = 'o';
+            item.addComponent('Equipable', {
+              slotType: 'ring'
+            });
           } else if (type === 'sword') {
             item.Renderable.char = 'T';
+            item.addComponent('Equipable', {
+              slotType: 'hand'
+            });
           } else if (type === 'book') {
             item.Renderable.char = 'B';
           }

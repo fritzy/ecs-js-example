@@ -18,7 +18,7 @@ export const EffectsFrom = {
 
 export const Equipable = {
   properties: {
-    type: 'legs'
+    slotType: 'legs'
   }
 }
 

@@ -11,7 +11,7 @@
   "dependencies": {
     "@fritzy/ecs": "file:../ecs-js",
     "rot-js": "^2.0.3",
-    "staydown": "^1.3.2"
+    "staydown": "^2.0.1"
   },
   "devDependencies": {
     "parcel": "^1.12.3"
