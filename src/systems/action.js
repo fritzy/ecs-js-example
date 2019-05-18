@@ -9,6 +9,7 @@ export default class ActionSystem extends ECS.System {
     super(ecs);
     this.global = this.ecs.getEntity('global').Global;
     this.game = this.global.game;
+    this.player = this.global.player;
     this.map = this.global.map;
   }
 
@@ -16,48 +17,56 @@ export default class ActionSystem extends ECS.System {
     for (const entity of entities) {
       const actions = [...entity.Action];
       const action = actions[0];
-      if (this.global.uiMode === 'equip') {
-        if (action.action === '') {
-          this.global.uiMode = 'move';
-        } else {
-          this.equip(entity, action.action);
-        }
-      } else {
-        switch (action.action) {
-          case 'up':
-          case 'down':
-          case 'left':
-          case 'right':
-            if (this.global.uiMode === 'move') {
-              this.move(entity, action.action);
-            } else if (this.global.uiMode === 'toggleDoor') {
-              this.toggleDoor(entity, action.action);
-              this.global.uiMode = 'move';
-            }
-            break;
-          case 'toggleDoor':
-            if (this.global.uiMode === 'move') {
-              this.global.uiMode = 'toggleDoor';
-              this.game.log('Open/close door in which direction?');
-            }
-            break;
-          case 'getItem':
-            this.getItem(entity);
-            break;
-          case 'inventory':
-            this.inventory(entity);
-            break;
-          case 'equip':
-            this.global.uiMode = 'equip';
-            this.equipList(entity);
-            break;
-          default:
-            this.global.uiMode = 'move';
-        }
+      switch (action.action) {
+        case 'moveNorth':
+          this.move(entity, 'up');
+          break;
+        case 'moveSouth':
+          this.move(entity, 'down');
+          break;
+        case 'moveWest':
+          this.move(entity, 'left');
+          break;
+        case 'moveEast':
+          this.move(entity, 'right');
+          break;
+        case 'getItem':
+          this.getItem(entity);
+          break;
+        case 'drop':
+          //
+          break;
+        case 'equip':
+          this.equip(entity, action.subject);
+          break;
       }
-
       entity.removeComponent(action);
     }
+  }
+
+  describe(entity, key) {
+
+    const idx = ALPHABET.indexOf(key);
+    if (entity.Inventory.slots.size <= idx) {
+      this.game.log("Invalid item.");
+      this.global.uiMode = 'move';
+      return;
+    }
+    const item = [...entity.Inventory.slots][idx]
+    if (item.Description) {
+      this.game.log('${item.Description.name}\n${item.Description.text}');
+    } else {
+      this.game.log('This item is a mystery to you.');
+    }
+    if (item.Equipable) {
+      this.game.log('You can equip this item by pressing E.');
+    }
+    this.game.log('You can drop this item by pressing D.');
+    this.game.uiMode('selected');
+  }
+
+  playerSelect(entity, key) {
+
   }
 
   coords(entity) {
@@ -68,15 +77,8 @@ export default class ActionSystem extends ECS.System {
     this.inventory(entity, true, 'Equip which item?');
   }
 
-  equip(entity, key) {
-    console.log('equip', key);
-    const idx = ALPHABET.indexOf(key);
-    if (entity.Inventory.slots.size <= idx) {
-      this.game.log("Invalid item.");
-      this.global.uiMode = 'move';
-      return;
-    }
-    const item = [...entity.Inventory.slots][idx]
+  equip(entity, item) {
+
     let name = 'an unknown item';
     if (item.Description) name = item.Description.name;
     if (!item.Equipable) {
@@ -87,7 +89,6 @@ export default class ActionSystem extends ECS.System {
     let success = false;
     for (const slotName of Object.keys(entity.EquipmentSlot)) {
       const eSlot = entity.EquipmentSlot[slotName];
-      console.log(slotName);
       if (!eSlot.slot && eSlot.slotType === item.Equipable.slotType) {
         entity.Inventory.slots.delete(item);
         eSlot.slot = item;
@@ -123,12 +124,17 @@ export default class ActionSystem extends ECS.System {
     if (output.length === 1) {
       output.push('  empty');
       this.global.uiMode = 'move';
+    } else {
+      output.push(' Press letter or ESC.');
+      this.global.uiMode = 'select';
     }
     this.game.log(output.join('\n'));
   }
 
   getItem(entity) {
-    let name = 'You'; if (entity.Description) {
+
+    let name = 'You';
+    if (entity.Description) {
       let name = entity.Description.name;
       name = name.substr(0, 1).toUpperCase() + name.substr(1);
     }
@@ -207,11 +213,13 @@ export default class ActionSystem extends ECS.System {
     tile.Floor.character = entity;
     entity.Coordinate.x = tx;
     entity.Coordinate.y = ty;
-    for (const item of tile.Floor.items) {
-      if (item.Description) {
-        this.game.log(`There is a ${item.Description.name} on the floor here.`);
-      } else {
-        this.game.log(`There is a nondescript item on the floor here.`);
+    if (entity === this.player) {
+      for (const item of tile.Floor.items) {
+        if (item.Description) {
+          this.game.log(`There is a ${item.Description.name} on the floor here.`);
+        } else {
+          this.game.log(`There is a nondescript item on the floor here.`);
+        }
       }
     }
   }

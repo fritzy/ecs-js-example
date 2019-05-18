@@ -17,6 +17,9 @@ export const Health = {
 
 export const Player = {
   properties: {
+    selectedItem: '<Entity>',
+    selectedComponent: '<Component>',
+    selectedField: ''
   }
 };
 
@@ -29,6 +32,7 @@ export const Inventory = {
 
 export const EquipmentSlot = {
   properties: {
+    description: 'shoulders',
     name: 'shoulders',
     slotType: 'shoulders',
     slot: '<Entity>'
@@ -39,7 +43,9 @@ export const EquipmentSlot = {
 
 export const Action = {
   properties: {
-    action: null
+    action: null,
+    subject: '<Entity>',
+    target: '<Entity>'
   },
   multiset: true
 }

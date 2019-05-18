@@ -20,7 +20,7 @@ const options = {
   height: 40
 };
 
-const TICKLENGTH = 1000 / 60;
+const TICKLENGTH = 1000 / 8;
 
 export default class Game {
 
@@ -82,24 +82,31 @@ export default class Game {
       },
       EquipmentSlot: {
         leftHand: {
+          description: 'left hand',
           slotType: 'hand'
         },
         rightHand: {
+          description: 'right hand',
           slotType: 'hand'
         },
         shoulders: {
+          description: 'shoulders',
           slotType: 'shoulders'
         },
         leftRing: {
+          description: 'fingers on the left hand',
           slotType: 'ring'
         },
         rightRing: {
+          description: 'fingers on the right hand',
           slotType: 'ring'
         },
         legs: {
+          description: 'legs',
           slotType: 'legs'
         },
         feet: {
+          description: 'feet',
           slotType: 'feet'
         }
       },
@@ -120,8 +127,6 @@ export default class Game {
 
     this.lastUpdate = performance.now();
     this.tickTime = 0;
-    this.log("It's the end of the world as we know it and I feel fine! I'm really not sure how I'm supposed to feel about it though.");
-    this.log("It's the end of the world as we know it and I feel fine! I'm really not sure how I'm supposed to feel about it though.");
     this.update(this.lastUpdate);
   }
 
