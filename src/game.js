@@ -6,6 +6,7 @@ import InputSystem from './systems/input';
 import RenderSystem from './systems/render';
 import ActionSystem from './systems/action';
 import Input from './input';
+import Tower from './tower';
 
 const options = {
   layout: "tile",
@@ -16,11 +17,11 @@ const options = {
   tileMap: {
   },
   tileColorize: true,
-  width: 40,
-  height: 40
+  width: 50,
+  height: 50
 };
 
-const TICKLENGTH = 1000 / 8;
+const TICKLENGTH = 1000 / 16;
 
 export default class Game {
 
@@ -52,8 +53,11 @@ export default class Game {
     this.registerComponents();
 
     this.display = new ROT.Display(options);
-    this.map = new ROT.Map.Uniform(options.width, options.height)
+    //this.map = new ROT.Map.Uniform(options.width, options.height)
+    this.map = new Tower(this.display, options.width, options.height)
 
+
+      /*
     this.mapEntity = this.ecs.createEntity({
       id: 'map',
       Map: {
@@ -118,15 +122,17 @@ export default class Game {
     this.global.Global.player = this.player;
 
 
-    this.createMap();
+    //this.createMap();
     Input(this.ecs);
 
     this.ecs.addSystem('input', InputSystem);
     this.ecs.addSystem('action', ActionSystem);
     this.ecs.addSystem('render', new RenderSystem(this.ecs, this.display));
+      */
 
     this.lastUpdate = performance.now();
     this.tickTime = 0;
+    this.container.appendChild(this.display.getContainer());
     this.update(this.lastUpdate);
   }
 
@@ -253,16 +259,20 @@ export default class Game {
     const delta = time - this.lastUpdate;
     this.tickTime += delta;
     this.lastUpdate = time;
+    /*
     this.ecs.runSystemGroup('input');
     if (this.player.Action) {
       this.runTurn();
     }
+    */
     if (this.tickTime < TICKLENGTH) {
       return;
     }
     this.tickTime %= TICKLENGTH;
-    this.runTick();
-    this.ecs.runSystemGroup('render');
+      this.map.work();
+    //this.map.render();
+    //this.runTick();
+    //this.ecs.runSystemGroup('render');
   }
 
   runTick() {
