@@ -28,5 +28,5 @@ export default class RenderSystem extends ECS.System {
   }
 }
 RenderSystem.query = {
-  has: ['Tile']
+  has: ['Tile', 'Coordinate', 'Renderable']
 };
