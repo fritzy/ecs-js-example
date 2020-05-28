@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fritzy/ecs": "file:../ecs-js",
+    "@fritzy/ecs": "^0.5.2",
     "rot-js": "^2.0.3",
     "staydown": "^2.0.1"
   },
