@@ -222,6 +222,11 @@ export default class Tower {
             const fcoord = floor.split('x');
             this.display.draw(fcoord[0], fcoord[1], '.', 'white', 'black');
           }
+        } else {
+          for (const floor of room.floor) {
+            const fcoord = floor.split('x');
+            this.display.draw(fcoord[0], fcoord[1], '.', 'red', 'black');
+          }
         }
       }
     }
